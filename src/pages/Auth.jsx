@@ -17,9 +17,10 @@ function Auth() {
       const body = { username, password };
       const response = await api.post(endpoint, body);
       localStorage.setItem('token', response.data.token);
+      onLogin();
       navigate('/planner');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed');
+      setError(err.response?.data?.message || 'Something went wrong');
     }
   };
 
