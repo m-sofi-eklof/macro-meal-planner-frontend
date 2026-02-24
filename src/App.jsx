@@ -1,19 +1,17 @@
-import { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Auth from './pages/Auth';
+import Planner from './pages/Planner';
 import { useAuth } from './context/AuthContext';
 
-function ProtectedRoute({children}){
-  const {isAuthenticated}=useAuth();
-  if (!isAuthenticated){
-    return <Navigate to="/auth" replace/>
+function ProtectedRoute({ children }) {
+  const { isAuthenticated } = useAuth();
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
   }
   return children;
 }
 
 function App() {
-  const [isAuth, setIsAuth] = useState(!!localStorage.getItem('token'));
-
   return (
     <div
       style={{
@@ -27,13 +25,12 @@ function App() {
     >
       <Router>
         <Routes>
-          <Route
-            path="/auth" element={<Auth/>} />
+          <Route path="/auth" element={<Auth />} />
           <Route
             path="/planner"
             element={
               <ProtectedRoute>
-                <div style={{color: 'white'}}>Planner coming soon</div>
+                <Planner />
               </ProtectedRoute>
             }
           />
