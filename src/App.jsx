@@ -1,6 +1,15 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Auth from './pages/Auth';
+import { useAuth } from './context/AuthContext';
+
+function ProtectedRoute({children}){
+  const {isAuthenticated}=useAuth();
+  if (!isAuthenticated){
+    return <Navigate to="/auth" replace/>
+  }
+  return children;
+}
 
 function App() {
   const [isAuth, setIsAuth] = useState(!!localStorage.getItem('token'));
@@ -19,12 +28,14 @@ function App() {
       <Router>
         <Routes>
           <Route
-            path="/auth"
-            element={!isAuth ? <Auth onLogin={() => setIsAuth(true)} /> : <Navigate to="/planner" />}
-          />
+            path="/auth" element={<Auth/>} />
           <Route
             path="/planner"
-            element={isAuth ? <div style={{ color: 'white' }}>Planner coming soon</div> : <Navigate to="/auth" />}
+            element={
+              <ProtectedRoute>
+                <div style={{color: 'white'}}>Planner coming soon</div>
+              </ProtectedRoute>
+            }
           />
           <Route path="*" element={<Navigate to="/auth" />} />
         </Routes>

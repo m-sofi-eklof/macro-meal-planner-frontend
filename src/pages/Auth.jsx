@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import { useAuth } from '../context/AuthContext';
 
 function Auth() {
   const [isLogin, setIsLogin] = useState(true);
@@ -8,6 +9,7 @@ function Auth() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const {login} = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -16,11 +18,21 @@ function Auth() {
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
       const body = { username, password };
       const response = await api.post(endpoint, body);
-      localStorage.setItem('token', response.data.token);
-      onLogin();
+      
+      const token = response?.data?.token;
+      if(!token){
+        setError('Login succeeded but no token was returned');
+        return;
+      }
+      login(token);
       navigate('/planner');
+
     } catch (err) {
-      setError(err.response?.data?.message || 'Something went wrong');
+      const msg =
+        err?.response?.data?.message ||
+        err?.message ||
+        'Sommething went wrong';
+      setError(msg);
     }
   };
 
@@ -49,7 +61,7 @@ function Auth() {
         }}
     >
         {isLogin ? 'Welcome back' : 'Create account'}
-      </h1>
+    </h1>
 
       <form onSubmit={handleSubmit}>
         {/* Username */}

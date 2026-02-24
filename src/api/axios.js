@@ -12,4 +12,18 @@ api.interceptors.request.use((config)=> {
     return config;
 });
 
+api.interceptors.response.use(
+    (response)=> response,
+    (error)=>{
+        const status = error?.response?.status;
+
+        //if token invalid(backend)¨
+        if(status===401||status===403){
+            localStorage.removeItem('token');
+            window.location.href='/';
+        }
+        return Promise.reject(error);
+    }
+);
+
 export default api;
