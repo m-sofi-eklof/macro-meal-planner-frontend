@@ -1,13 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 
 const GRADIENTS = [
-  'linear-gradient(135deg, rgba(56, 146, 248, 0.5), rgba(16,185,129,0.12))',
-  'linear-gradient(135deg, rgba(251, 226, 36, 0.38), rgba(248,113,113,0.14))',
-  'linear-gradient(135deg, rgba(176, 112, 254, 0.57), rgba(254, 105, 165, 0.11))',
-  'linear-gradient(135deg, rgba(96, 165, 250, 0.44), rgba(129,140,248,0.16))',
-  'linear-gradient(135deg, rgba(48, 228, 204, 0.46), rgba(59,130,246,0.14))',
-  'linear-gradient(135deg, rgba(251, 162, 60, 0.45), rgba(248,113,113,0.16))',
-  'linear-gradient(135deg, rgba(244, 114, 218, 0.49), rgba(191, 56, 248, 0.22))',
+  'linear-gradient(135deg, rgba(56, 146, 248, 0.57), rgba(16, 185, 129, 0.21))',
+  'linear-gradient(135deg, rgba(251, 226, 36, 0.51), rgba(248, 113, 113, 0.24))',
+  'linear-gradient(135deg, rgba(176, 112, 254, 0.63), rgba(254, 105, 165, 0.19))',
+  'linear-gradient(135deg, rgba(84, 160, 252, 0.57), rgba(163, 129, 248, 0.26))',
+  'linear-gradient(135deg, rgba(48, 228, 204, 0.54), rgba(59, 131, 246, 0.26))',
+  'linear-gradient(135deg, rgba(251, 162, 60, 0.56), rgba(248, 113, 113, 0.27))',
+  'linear-gradient(135deg, rgba(244, 114, 218, 0.54), rgba(191, 56, 248, 0.34))',
 ];
 
 function DayCard({ dayName, gradientIndex,date, dayData }) {

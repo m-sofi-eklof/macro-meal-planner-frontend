@@ -122,7 +122,13 @@ function Planner() {
             <span style={{ fontSize: '0.9rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9ca3af' }}>
               Weekly plan
             </span>
-            <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>
+            <span style={{ 
+              fontSize: isMobile ? 'clamp(0.8rem, 3.5vw, 1rem':'1.1rem', 
+              fontWeight: 600, 
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis'
+            }}>
               {weekLabel}
             </span>
           </div>
@@ -208,7 +214,12 @@ const navButtonStyle = {
 };
 
 const userButtonStyle = {
-  padding:'0.45rem 0.85rem',
+  width:'45px',
+  height: '45px',
+  display:'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding:'0',
   borderRadius: '10px',
   border: '1px solid #8b8d7169',
   background: 'rgba(2, 92, 137, 0.59)',
@@ -217,6 +228,7 @@ const userButtonStyle = {
   letterSpacing: '0.08em',
   textTransform: 'uppercase',
   cursor: 'pointer',
+  flexShrink:0,
 }
 
 export default Planner;
