@@ -8,6 +8,12 @@ function Planner() {
   const [week, setWeek] = useState(null);
   const [days, setDays]=useState([]);
   const[loading, setLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(()=>{
+    const handleResize = ()=> setIsMobile(window.innerWidth<768);
+    window.addEventListener('resize', handleResize);
+  }, []);
 
   const fetchCurrentWeek = async () => {
     setLoading(true);
@@ -103,9 +109,11 @@ function Planner() {
           width: '100%',
           maxWidth: '900px',
           display: 'flex',
+          flexDirection: isMobile? 'column' : 'row',
           justifyContent: 'space-between',
-          alignItems: 'center',
+          alignItems: isMobile? 'flex-start':'center',
           marginBottom: '1.5rem',
+          gap: isMobile ? '1rem' : '0',
         }}
       >
         <div style={{display: 'flex', gap: '0.7rem',flexDirection: 'row'}}>
@@ -120,10 +128,15 @@ function Planner() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button style={navButtonStyle} onClick={handlePrevWeek}>‹ Prev</button>
-          <button style={navButtonStyle} onClick={fetchCurrentWeek}>This week</button>
-          <button style={navButtonStyle} onClick={handleNextWeek}>Next ›</button>
+        <div style={{ 
+          display: 'flex', 
+          gap: '0.5rem', 
+          width: isMobile?'100%':'auto',
+          justifyContent: isMobile ? 'space-between' : 'flex-start'
+        }}>
+          <button style={{...navButtonStyle, flex : isMobile? 1: 'none'}} onClick={handlePrevWeek}>‹ Prev</button>
+          <button style={{...navButtonStyle, flex : isMobile? 1: 'none'}} onClick={fetchCurrentWeek}>This week</button>
+          <button style={{...navButtonStyle, flex : isMobile? 1: 'none'}} onClick={handleNextWeek}>Next ›</button>
         </div>
       </div>
 

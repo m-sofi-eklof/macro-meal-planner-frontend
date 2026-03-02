@@ -1,7 +1,9 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Auth from './pages/Auth';
 import Planner from './pages/Planner';
+import MealCreator from './pages/MealCreator';
 import { useAuth } from './context/AuthContext';
+import { AuthProvider } from './context/AuthContext';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
@@ -9,6 +11,32 @@ function ProtectedRoute({ children }) {
     return <Navigate to="/auth" replace />;
   }
   return children;
+}
+function AppContent(){
+  return(
+    <Router>
+        <Routes>
+          <Route path="/auth" element={<Auth />} />
+          <Route
+            path="/planner"
+            element={
+              <ProtectedRoute>
+                <Planner />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/MealCreator"
+            element={
+              <ProtectedRoute>
+                <MealCreator/>
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/auth" />} />
+        </Routes>
+      </Router>
+  );
 }
 
 function App() {
@@ -23,20 +51,7 @@ function App() {
         background: 'radial-gradient(circle at top, #1f2937 0%, #020617 55%, #020617 100%)',
       }}
     >
-      <Router>
-        <Routes>
-          <Route path="/auth" element={<Auth />} />
-          <Route
-            path="/planner"
-            element={
-              <ProtectedRoute>
-                <Planner />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="*" element={<Navigate to="/auth" />} />
-        </Routes>
-      </Router>
+      <AppContent />
     </div>
   );
 }

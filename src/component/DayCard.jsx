@@ -1,3 +1,5 @@
+import { useNavigate } from 'react-router-dom';
+
 const GRADIENTS = [
   'linear-gradient(135deg, rgba(56, 146, 248, 0.5), rgba(16,185,129,0.12))',
   'linear-gradient(135deg, rgba(251, 226, 36, 0.38), rgba(248,113,113,0.14))',
@@ -118,7 +120,8 @@ function ProgressBar({ label, value, color }) {
 
 function MealSlot({ mealType, meal }) {
   const hasMeal = !!meal; // later: real data
-
+  const navigate = useNavigate();
+  
   if (!hasMeal) {
     // empty state
     return (
@@ -137,6 +140,7 @@ function MealSlot({ mealType, meal }) {
           alignItems: 'center',
           cursor: 'pointer',
         }}
+        onClick={()=>navigate('/MealCreator')}
       >
         <span style={{ opacity: 0.9 }}>+ Add {mealType}</span>
         <span
