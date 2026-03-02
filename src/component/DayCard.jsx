@@ -1,11 +1,11 @@
 const GRADIENTS = [
-  'linear-gradient(135deg, rgba(56,189,248,0.18), rgba(16,185,129,0.12))',
-  'linear-gradient(135deg, rgba(251,191,36,0.18), rgba(248,113,113,0.14))',
-  'linear-gradient(135deg, rgba(192,132,252,0.22), rgba(248,113,113,0.16))',
-  'linear-gradient(135deg, rgba(96,165,250,0.2), rgba(129,140,248,0.16))',
-  'linear-gradient(135deg, rgba(45,212,191,0.18), rgba(59,130,246,0.14))',
-  'linear-gradient(135deg, rgba(251,146,60,0.2), rgba(248,113,113,0.16))',
-  'linear-gradient(135deg, rgba(244,114,182,0.2), rgba(56,189,248,0.16))',
+  'linear-gradient(135deg, rgba(56, 146, 248, 0.5), rgba(16,185,129,0.12))',
+  'linear-gradient(135deg, rgba(251, 226, 36, 0.38), rgba(248,113,113,0.14))',
+  'linear-gradient(135deg, rgba(176, 112, 254, 0.57), rgba(254, 105, 165, 0.11))',
+  'linear-gradient(135deg, rgba(96, 165, 250, 0.44), rgba(129,140,248,0.16))',
+  'linear-gradient(135deg, rgba(48, 228, 204, 0.46), rgba(59,130,246,0.14))',
+  'linear-gradient(135deg, rgba(251, 162, 60, 0.45), rgba(248,113,113,0.16))',
+  'linear-gradient(135deg, rgba(244, 114, 218, 0.49), rgba(191, 56, 248, 0.22))',
 ];
 
 function DayCard({ dayName, gradientIndex,date, dayData }) {
@@ -22,7 +22,7 @@ function DayCard({ dayName, gradientIndex,date, dayData }) {
         background: GRADIENTS[gradientIndex % GRADIENTS.length],
         border: '1px solid rgba(254,215,170,0.6)',
         boxShadow:
-          '0 24px 60px rgba(15,23,42,0.95), 0 0 18px rgba(168,85,247,0.45)',
+          '0 12px 30px rgba(15,23,42,0.95), 0 0 6px rgba(168,85,247,0.45)',
         backdropFilter: 'blur(16px)',
       }}
     >

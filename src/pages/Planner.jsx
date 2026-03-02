@@ -9,25 +9,64 @@ function Planner() {
   const [days, setDays]=useState([]);
   const[loading, setLoading] = useState(true);
 
-  useEffect(()=>{
-    const fetchCurrentWeek = async () =>{
-      try{
-        //current week
-        const res = await api.get('/api/weeks/current');
-        const currentWeek= res.data;
-        setWeek(currentWeek);
+  const fetchCurrentWeek = async () => {
+    setLoading(true);
+    try {
+      const res = await api.get('/api/weeks/current');
+      const currentWeek = res.data;
+      setWeek(currentWeek);
 
-        //days for that week
-        const daysRes = await api.get(`/api/weeks/${currentWeek.id}/days`);
-        setDays(daysRes.data || []);
-      }catch(err){
-        console.error('Failed to fetch week/days:', err);
-      }finally{
-        setLoading(false);
-      }
-    };
+      const daysRes = await api.get(`/api/weeks/${currentWeek.id}/days`);
+      setDays(daysRes.data || []);
+    } catch (err) {
+      console.error('Failed to fetch week/days:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchCurrentWeek();
   }, []);
+
+
+  const handleNextWeek = async ()=>{
+    setLoading(true);
+    try{
+      //get week
+      if(!week) return;
+      const res = await api.get(`/api/weeks/${week.id}/next`);
+      const nextWeek = res.data;
+      setWeek(nextWeek);
+
+      //get days
+      const resDays = await api.get(`/api/weeks/${nextWeek.id}/days`);
+      setDays(resDays.data || []);
+    }catch(err){
+      console.error('Failed to fetch week/days:', err);
+    }finally{
+      setLoading(false);
+    }
+  }
+
+  const handlePrevWeek = async ()=> {
+    setLoading(true);
+    try{
+      //get week
+      if(!week) return;
+      const res = await api.get(`/api/weeks/${week.id}/prev`);
+      const prevWeek = res.data;
+      setWeek(prevWeek);
+
+      //get days
+      const resDays = await api.get(`/api/weeks/${prevWeek.id}/days`);
+      setDays(resDays.data || []);
+    }catch(err){
+      console.error('Failed to fetch week/days:', err);
+    }finally{
+      setLoading(false);
+    }
+  }
 
   const weekLabel = week
   ? `Week ${week.weekNumber} / ${week.startDate} - ${week.endDate}`
@@ -53,7 +92,7 @@ function Planner() {
         flexDirection: 'column',
         alignItems: 'center',
         padding: '2rem 1rem',
-        background: 'radial-gradient(circle at top, #020617 0%, #020617 50%, #000000 100%)',
+        background: 'radial-gradient(circle at top, #060918e5 0%, #030510c8 50%, #00000091 100%)',
         color: 'white',
         overflowY: 'auto',
       }}
@@ -69,19 +108,22 @@ function Planner() {
           marginBottom: '1.5rem',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-          <span style={{ fontSize: '0.9rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9ca3af' }}>
-            Weekly plan
-          </span>
-          <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>
-            {weekLabel}
-          </span>
+        <div style={{display: 'flex', gap: '0.7rem',flexDirection: 'row'}}>
+          <button style={userButtonStyle}>ME</button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+            <span style={{ fontSize: '0.9rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9ca3af' }}>
+              Weekly plan
+            </span>
+            <span style={{ fontSize: '1.1rem', fontWeight: 600 }}>
+              {weekLabel}
+            </span>
+          </div>
         </div>
 
         <div style={{ display: 'flex', gap: '0.5rem' }}>
-          <button style={navButtonStyle}>‹ Prev</button>
-          <button style={navButtonStyle}>This week</button>
-          <button style={navButtonStyle}>Next ›</button>
+          <button style={navButtonStyle} onClick={handlePrevWeek}>‹ Prev</button>
+          <button style={navButtonStyle} onClick={fetchCurrentWeek}>This week</button>
+          <button style={navButtonStyle} onClick={handleNextWeek}>Next ›</button>
         </div>
       </div>
 
@@ -92,15 +134,13 @@ function Planner() {
             width: '100%',
             padding: '0.85rem 1.25rem',
             borderRadius: '999px',
-            border: '1px solid #8bf62d72',
-            background: 'linear-gradient(135deg, rgba(251, 60, 175, 0.42), rgba(22, 137, 157, 0.7))',
+            background: 'linear-gradient(135deg, rgba(254, 43, 181, 0.82), rgba(38, 160, 194, 0.77))',
             color: '#fefce8',
             fontWeight: 600,
             fontSize: '0.9rem',
             letterSpacing: '0.12em',
             textTransform: 'uppercase',
             cursor: 'pointer',
-            boxShadow: '0 16px 40px rgba(15,23,42,0.9), 0 0 18px rgba(251,146,60,0.4)',
           }}
         >
           Generate shopping list
@@ -153,5 +193,17 @@ const navButtonStyle = {
   textTransform: 'uppercase',
   cursor: 'pointer',
 };
+
+const userButtonStyle = {
+  padding:'0.45rem 0.85rem',
+  borderRadius: '10px',
+  border: '1px solid #8b8d7169',
+  background: 'rgba(2, 92, 137, 0.59)',
+  color: '#e5e7eb',
+  fontSize: '0.8rem',
+  letterSpacing: '0.08em',
+  textTransform: 'uppercase',
+  cursor: 'pointer',
+}
 
 export default Planner;
