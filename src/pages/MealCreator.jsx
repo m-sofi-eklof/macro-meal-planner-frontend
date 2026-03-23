@@ -273,7 +273,7 @@ function MealCreator() {
                 >
                   <div>{r.name}</div>
                   <div style={{ fontSize: '0.72rem', color: '#9ca3af', marginTop: '0.15rem' }}>
-                    {r.calories} kcal · {r.protein ?? 0}g protein · per {r.servingDescription || '100g'}
+                    {r.calories} kcal · {r.protein ?? 0}g protein · per {r.servingDescription || '1 serving'}
                   </div>
                 </button>
               ))}
