@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Auth from './pages/Auth';
 import Planner from './pages/Planner';
 import MealCreator from './pages/MealCreator';
+import UserPage from './pages/User';
 import { useAuth } from './context/AuthContext';
 import { AuthProvider } from './context/AuthContext';
 
@@ -30,6 +31,14 @@ function AppContent(){
             element={
               <ProtectedRoute>
                 <MealCreator/>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/user"
+            element={
+              <ProtectedRoute>
+                <UserPage/>
               </ProtectedRoute>
             }
           />

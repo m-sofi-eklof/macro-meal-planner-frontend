@@ -9,7 +9,7 @@ function isTokenValid(){
 
     try{
         const payload =jwtDecode(token);
-        const now = Date.now / 1000; //seconds
+        const now = Date.now() / 1000; //seconds
         if (payload.exp && payload.exp<now){
             localStorage.removeItem("token");
             return false;
