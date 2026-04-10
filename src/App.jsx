@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Auth from './pages/Auth';
 import Planner from './pages/Planner';
 import MealCreator from './pages/MealCreator';
+import ShoppingList from './pages/ShoppingList';
 import UserPage from './pages/User';
 import { useAuth } from './context/AuthContext';
 import { AuthProvider } from './context/AuthContext';
@@ -39,6 +40,14 @@ function AppContent(){
             element={
               <ProtectedRoute>
                 <UserPage/>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/list"
+            element={
+              <ProtectedRoute>
+                <ShoppingList/>
               </ProtectedRoute>
             }
           />

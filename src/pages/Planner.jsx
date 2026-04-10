@@ -165,7 +165,7 @@ function Planner() {
           textTransform: 'uppercase',
           cursor: 'pointer',
           border: 'none',
-        }}>
+        }} onClick={navigate('/shopping')}>
           Generate shopping list
         </button>
       </div>
