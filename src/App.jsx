@@ -9,7 +9,8 @@ import { AuthProvider } from './context/AuthContext';
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
-  if (!isAuthenticated) {
+  const hasToken = !!localStorage.getItem('token');
+  if (!isAuthenticated && !hasToken) {
     return <Navigate to="/auth" replace />;
   }
   return children;

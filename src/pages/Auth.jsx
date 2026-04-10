@@ -9,192 +9,192 @@ function Auth() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const {login} = useAuth();
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setError('');
       const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
-      const body = { username, password };
-      const response = await api.post(endpoint, body);
-      
+      const response = await api.post(endpoint, { username, password });
       const token = response?.data?.token;
-      if(!token){
+      if (!token) {
         setError('Login succeeded but no token was returned');
         return;
       }
       login(token);
       navigate('/planner');
-
     } catch (err) {
       const msg =
         err?.response?.data?.message ||
         err?.message ||
-        'Sommething went wrong';
+        'Something went wrong';
       setError(msg);
     }
   };
 
+  const inputStyle = {
+    width: '100%',
+    boxSizing: 'border-box',
+    padding: '0.65rem 0.85rem',
+    borderRadius: '8px',
+    border: '1px solid rgba(255,255,255,0.1)',
+    backgroundColor: 'rgba(255,255,255,0.05)',
+    color: 'white',
+    outline: 'none',
+    fontSize: '0.9rem',
+  };
+
   return (
-    // Auth card
-    <div
-        style={{
-            width: '100%',
-            maxWidth: '380px',
-            padding: '2.5rem 2rem',
-            borderRadius: '20px',
-            background:
-            'radial-gradient(circle at top, rgba(168,85,247,0.16), rgba(3,7,18,0.96))',
-            boxShadow: '0 24px 60px rgba(15,23,42,0.95), 0 0 20px rgba(254,215,170,0.45)',
-            border: '1px solid #fed7aa',
-            color: 'white',
-            backdropFilter: 'blur(14px)',
-        }}
-    >
-    <h1
-        style={{
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '2rem',
+      width: '100%',
+      maxWidth: '360px',
+      padding: '1rem',
+    }}>
+
+      {/* Tagline */}
+      <div style={{ textAlign: 'center' }}>
+        <h1 style={{
+          fontSize: '2.4rem',
+          fontWeight: '800',
+          margin: 0,
+          lineHeight: 1.15,
+          letterSpacing: '-0.03em',
+          background: 'linear-gradient(135deg, #22d3ee 0%, #ec4899 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+        }}>
+          Your meals.<br />Your macros.
+        </h1>
+        <p style={{
+          fontSize: '0.92rem',
+          color: '#9ca3af',
+          fontWeight: '500',
+          marginTop: '0.65rem',
+          lineHeight: 1.5,
+        }}>
+          Forget generic meal plans — this one's built around you.
+        </p>
+      </div>
+
+      {/* Card */}
+      <div style={{
+        width: '100%',
+        padding: '2rem',
+        borderRadius: '16px',
+        backgroundColor: 'rgba(255,255,255,0.04)',
+        border: '1px solid rgba(255,255,255,0.08)',
+        backdropFilter: 'blur(12px)',
+      }}>
+        <h2 style={{
           textAlign: 'center',
-          marginBottom: '1.5rem',
-          fontSize: '1.5rem',
-          fontWeight: '600',
-        }}
-    >
-        {isLogin ? 'Welcome back' : 'Create account'}
-    </h1>
+          fontSize: '1rem',
+          fontWeight: '500',
+          color: '#e5e7eb',
+          margin: '0 0 1.5rem 0',
+        }}>
+          {isLogin ? 'Welcome back' : 'Create account'}
+        </h2>
 
-      <form onSubmit={handleSubmit}>
-        {/* Username */}
-        <div style={{ marginBottom: '1rem' }}>
-          <label
-            style={{
+        <form onSubmit={handleSubmit}>
+          <div style={{ marginBottom: '1rem' }}>
+            <label style={{
               display: 'block',
               marginBottom: '0.35rem',
-              fontSize: '0.85rem',
-              color: '#e5e7eb',
-            }}
-          >
-            Username
-          </label>
-          <input
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-            style={{
-                width: '95%',
-                margin: '0 auto',
-                padding: '0.6rem 0.75rem',
-                borderRadius: '10px',
-                border: '1px solid #fed7aa',
-                backgroundColor: '#020617',
-                color: 'white',
-                outline: 'none',
-                boxShadow: '0 6px 15px rgba(15,23,42,0.95), 0 0 5px rgba(254,215,170,0.45)',
-            }}
+              fontSize: '0.75rem',
+              color: '#9ca3af',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+            }}>
+              Username
+            </label>
+            <input
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+              style={inputStyle}
+            />
+          </div>
 
-          />
-        </div>
-
-        {/* Password */}
-        <div style={{ marginBottom: '1.25rem' }}>
-          <label
-            style={{
+          <div style={{ marginBottom: '1.5rem' }}>
+            <label style={{
               display: 'block',
               marginBottom: '0.35rem',
-              fontSize: '0.85rem',
-              color: '#e5e7eb',
-            }}
-          >
-            Password
-          </label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
+              fontSize: '0.75rem',
+              color: '#9ca3af',
+              letterSpacing: '0.06em',
+              textTransform: 'uppercase',
+            }}>
+              Password
+            </label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              style={inputStyle}
+            />
+          </div>
+
+          <button
+            type="submit"
             style={{
-              width: '95%',
-              margin: '0 auto',
-              padding: '0.6rem 0.75rem',
+              width: '100%',
+              padding: '0.75rem',
               borderRadius: '8px',
-              border: '1px solid #fed7aa',
-              backgroundColor: '#020617',
-              color: 'white',
-              outline: 'none',
-              boxShadow: '0 6px 15px rgba(15,23,42,0.95), 0 0 5px rgba(254,215,170,0.45)',
+              border: 'none',
+              backgroundColor: 'white',
+              color: '#0a0a0a',
+              fontWeight: '600',
+              fontSize: '0.9rem',
+              cursor: 'pointer',
+              letterSpacing: '0.01em',
             }}
-          />
-        </div>
+          >
+            {isLogin ? 'Sign in' : 'Create account'}
+          </button>
+        </form>
 
-        {/* Button */}
-        <div
-            style={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginTop: '1.5REM'
-            }}
-        >
-            <button
-                type="submit"
-                style={{
-                    width: '85%',
-                    padding: '0.7rem',
-                    borderRadius: '999px',
-                    border: 'none',
-                    background:
-                        'linear-gradient(135deg, #22d3ee, #ec4899)',
-                    color: '#000000',
-                    fontWeight: '675',
-                    letterSpacing: '0.1em',
-                    cursor: 'pointer',
-                    boxShadow: '5 10px 24px rgba(0, 0, 0, 0.99)',
-                }}
-            >
-                {isLogin ? 'Login' : 'Register'}
-            </button>
-        </div>
-      </form>
-
-      {/* Error */}
-      {error && (
-        <p
-          style={{
-            color: '#f97373',
+        {error && (
+          <p style={{
+            color: '#f87171',
             textAlign: 'center',
             marginTop: '1rem',
-            fontSize: '0.9rem',
-          }}
-        >
-          {error}
-        </p>
-      )}
+            fontSize: '0.85rem',
+          }}>
+            {error}
+          </p>
+        )}
 
-      {/* Toggle */}
-      <p
-        style={{
+        <p style={{
           textAlign: 'center',
           marginTop: '1.25rem',
-          fontSize: '0.85rem',
-          color: '#9ca3af',
-        }}
-      >
-        {isLogin ? "Don't have an account?" : 'Already registered?'}{' '}
-        <button
-          type="button"
-          onClick={() => setIsLogin(!isLogin)}
-          style={{
-            background: 'none',
-            border: 'none',
-            color: '#60a5fa',
-            cursor: 'pointer',
-            textDecoration: 'underline',
-            padding: 0,
-            outline: 'none',
-          }}
-        >
-          {isLogin ? 'Register' : 'Login'}
-        </button>
-      </p>
+          fontSize: '0.82rem',
+          color: '#6b7280',
+        }}>
+          {isLogin ? "Don't have an account?" : 'Already registered?'}{' '}
+          <button
+            type="button"
+            onClick={() => setIsLogin(!isLogin)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#d1d5db',
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              padding: 0,
+              fontSize: '0.82rem',
+            }}
+          >
+            {isLogin ? 'Register' : 'Sign in'}
+          </button>
+        </p>
+      </div>
     </div>
   );
 }

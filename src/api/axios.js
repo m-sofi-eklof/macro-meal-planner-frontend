@@ -17,8 +17,9 @@ api.interceptors.response.use(
     (error)=>{
         const status = error?.response?.status;
 
-        //if token invalid(backend)¨
-        if(status===401||status===403){
+        //if token invalid(backend) - skip redirect for auth endpoints
+        const isAuthEndpoint = error.config?.url?.includes('/api/auth/');
+        if((status===401||status===403) && !isAuthEndpoint){
             localStorage.removeItem('token');
             window.location.href='/';
         }

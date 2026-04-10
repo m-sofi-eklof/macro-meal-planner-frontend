@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from '../api/axios';
+import { getFavorites, saveFavorite, deleteFavorite, quickAdd } from '../api/favorites';
 
 const MEAL_GRADIENTS = {
   BREAKFAST:'linear-gradient(135deg, rgba(251,226,36,0.5), rgba(248,113,113,0.3))',
@@ -34,6 +35,8 @@ function MealCreator() {
   const [manualProtein, setManualProtein] =useState('');
   const [manualQty, setManualQty] =useState('100');
 
+  const [favorites, setFavorites] = useState([]);
+
   //load current food items when editing a meal
   useEffect(() => {
     if (!location.state?.mealId) return;
@@ -41,6 +44,46 @@ function MealCreator() {
       .then(res=>setFoodItems(res.data||[]))
       .catch(()=>{});
   },[]);
+
+  useEffect(() => {
+    getFavorites()
+      .then(setFavorites)
+      .catch(e => console.error('Failed to load favorites', e));
+  }, []);
+
+  const refreshFavorites = () =>
+    getFavorites()
+      .then(setFavorites)
+      .catch(e => console.error('Failed to refresh favorites', e));
+
+  const handleQuickAdd = async (favoriteId) => {
+    try {
+      const id = await ensureMeal();
+      if (!id) return;
+      const item = await quickAdd(favoriteId, id);
+      setFoodItems(prev => [...prev, item]);
+    } catch (e) {
+      console.error('Quick add failed', e);
+    }
+  };
+
+  const handleDeleteFavorite = async (id) => {
+    try {
+      await deleteFavorite(id);
+      await refreshFavorites();
+    } catch (e) {
+      console.error('Failed to delete favorite', e);
+    }
+  };
+
+  const handleSaveFavorite = async (result) => {
+    try {
+      await saveFavorite(result);
+      await refreshFavorites();
+    } catch (e) {
+      console.error('Failed to save favorite', e);
+    }
+  };
 
   const totalCalories = foodItems.reduce((sum, f)=> sum + (f.calories ||0),0);
   const totalProtein = foodItems.reduce((sum, f)=> sum + (f.protein ||0),0);
@@ -234,6 +277,69 @@ function MealCreator() {
         )}
       </div>
 
+      {/*favorites section*/}
+      <div style={{ width: '100%', maxWidth: '520px', marginBottom: '0.85rem' }}>
+        <div style={{ ...sectionLabel, marginBottom: '0.5rem' }}>Favourites ⚡</div>
+        {favorites.length === 0 ? (
+          <div style={{ fontSize: '0.78rem', color: '#4b5563', fontStyle: 'italic' }}>
+            Save items from search to add favourites
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '0.35rem' }}>
+            {favorites.map(fav => (
+              <div key={fav.id} style={{
+                flexShrink: 0,
+                padding: '0.55rem 0.75rem',
+                borderRadius: '12px',
+                border: '1px solid rgba(148,163,184,0.2)',
+                background: 'rgba(15,23,42,0.85)',
+                minWidth: '110px',
+                maxWidth: '140px',
+                position: 'relative',
+              }}>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteFavorite(fav.id)}
+                  style={{
+                    position: 'absolute',
+                    top: '0.3rem',
+                    right: '0.3rem',
+                    background: 'none',
+                    border: 'none',
+                    color: '#6b7280',
+                    cursor: 'pointer',
+                    fontSize: '0.7rem',
+                    lineHeight: 1,
+                    padding: '0.1rem 0.2rem',
+                  }}
+                >×</button>
+                <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#e5e7eb', marginBottom: '0.2rem', paddingRight: '0.8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {fav.name}
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#9ca3af', marginBottom: '0.4rem' }}>
+                  {fav.calories} kcal · {fav.protein ?? 0}g
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleQuickAdd(fav.id)}
+                  style={{
+                    width: '100%',
+                    padding: '0.25rem',
+                    borderRadius: '7px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, rgba(56,146,248,0.7), rgba(16,185,129,0.5))',
+                    color: 'white',
+                    fontWeight: 600,
+                    fontSize: '0.72rem',
+                    cursor: 'pointer',
+                  }}
+                >Add</button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/*add buttons(idle)*/}
       {mode === 'idle' && (
         <div style={{ width: '100%', maxWidth: '520px', display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
@@ -265,17 +371,34 @@ function MealCreator() {
           {!selectedResult && searchResults.length > 0 && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', maxHeight: '220px', overflowY: 'auto' }}>
               {searchResults.map((r, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => setSelectedResult(r)}
-                  style={{ textAlign: 'left', padding: '0.6rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.18)', background: 'rgba(15,23,42,0.8)', color: '#e5e7eb', cursor: 'pointer', fontSize: '0.85rem' }}
-                >
-                  <div>{r.name}</div>
-                  <div style={{ fontSize: '0.72rem', color: '#9ca3af', marginTop: '0.15rem' }}>
-                    {r.calories} kcal · {r.protein ?? 0}g protein · per {r.servingDescription || '1 serving'}
-                  </div>
-                </button>
+                <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedResult(r)}
+                    style={{ flex: 1, textAlign: 'left', padding: '0.6rem 0.85rem', borderRadius: '10px', border: '1px solid rgba(148,163,184,0.18)', background: 'rgba(15,23,42,0.8)', color: '#e5e7eb', cursor: 'pointer', fontSize: '0.85rem' }}
+                  >
+                    <div>{r.name}</div>
+                    <div style={{ fontSize: '0.72rem', color: '#9ca3af', marginTop: '0.15rem' }}>
+                      {r.calories} kcal · {r.protein ?? 0}g protein · per {r.servingDescription || '1 serving'}
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleSaveFavorite(r)}
+                    title="Save to favourites"
+                    style={{
+                      flexShrink: 0,
+                      background: 'none',
+                      border: '1px solid rgba(148,163,184,0.2)',
+                      borderRadius: '8px',
+                      color: '#fbbf24',
+                      cursor: 'pointer',
+                      fontSize: '1rem',
+                      padding: '0.45rem 0.55rem',
+                      lineHeight: 1,
+                    }}
+                  >★</button>
+                </div>
               ))}
             </div>
           )}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 
 function aggregateFoodItems(items) {
   const map = new Map();
@@ -33,13 +33,10 @@ export default function ShoppingList() {
   useEffect(() => {
     const fetchShoppingList = async () => {
       try {
-        const token = localStorage.getItem('token');
-        const headers = { Authorization: `Bearer ${token}` };
-
-        const weekRes = await axios.get('/api/weeks/current', { headers });
+        const weekRes = await api.get('/api/weeks/current');
         const weekId = weekRes.data.id;
 
-        const foodsRes = await axios.get(`/api/weeks/${weekId}/foods`, { headers });
+        const foodsRes = await api.get(`/api/weeks/${weekId}/foods`);
         setItems(aggregateFoodItems(foodsRes.data));
       } catch (err) {
         setError('Failed to load shopping list');
