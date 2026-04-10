@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import api from '../api/axios';
 import { getFavorites, saveFavorite, deleteFavorite, quickAdd } from '../api/favorites';
+import { getFavoriteMeals, saveMealAsFavorite, deleteFavoriteMeal, quickAddMeal } from '../api/favoriteMeals';
 
 const MEAL_GRADIENTS = {
   BREAKFAST:'linear-gradient(135deg, rgba(251,226,36,0.5), rgba(248,113,113,0.3))',
@@ -36,6 +37,9 @@ function MealCreator() {
   const [manualQty, setManualQty] =useState('100');
 
   const [favorites, setFavorites] = useState([]);
+  const [favoriteMeals, setFavoriteMeals] = useState([]);
+  const [showSaveMealModal, setShowSaveMealModal] = useState(false);
+  const [favoriteMealName, setFavoriteMealName] = useState('');
 
   //load current food items when editing a meal
   useEffect(() => {
@@ -49,6 +53,12 @@ function MealCreator() {
     getFavorites()
       .then(setFavorites)
       .catch(e => console.error('Failed to load favorites', e));
+  }, []);
+
+  useEffect(() => {
+    getFavoriteMeals()
+      .then(setFavoriteMeals)
+      .catch(e => console.error('Failed to load favorite meals', e));
   }, []);
 
   const refreshFavorites = () =>
@@ -82,6 +92,49 @@ function MealCreator() {
       await refreshFavorites();
     } catch (e) {
       console.error('Failed to save favorite', e);
+    }
+  };
+
+  const refreshFavoriteMeals = () =>
+    getFavoriteMeals()
+      .then(setFavoriteMeals)
+      .catch(e => console.error('Failed to refresh favorite meals', e));
+
+  const refreshFoodItems = (id) =>
+    api.get(`/api/meals/${id}/food-items`)
+      .then(res => setFoodItems(res.data || []))
+      .catch(e => console.error('Failed to refresh food items', e));
+
+  const handleQuickAddMeal = async (favoriteMealId) => {
+    try {
+      const id = await ensureMeal();
+      if (!id) return;
+      await quickAddMeal(favoriteMealId, id);
+      await refreshFoodItems(id);
+      await refreshFavoriteMeals();
+    } catch (e) {
+      console.error('Quick add meal failed', e);
+    }
+  };
+
+  const handleDeleteFavoriteMeal = async (id) => {
+    try {
+      await deleteFavoriteMeal(id);
+      await refreshFavoriteMeals();
+    } catch (e) {
+      console.error('Failed to delete favorite meal', e);
+    }
+  };
+
+  const handleSaveMealAsFavorite = async () => {
+    if (!favoriteMealName.trim() || !mealId) return;
+    try {
+      await saveMealAsFavorite(mealId, favoriteMealName.trim());
+      await refreshFavoriteMeals();
+      setShowSaveMealModal(false);
+      setFavoriteMealName('');
+    } catch (e) {
+      console.error('Failed to save meal as favorite', e);
     }
   };
 
@@ -229,6 +282,135 @@ function MealCreator() {
           </div>
         </div>
       </div>
+
+      {/*favourite meals section*/}
+      <div style={{ width: '100%', maxWidth: '520px', marginBottom: '1rem' }}>
+        <div style={{ ...sectionLabel, marginBottom: '0.5rem' }}>Favourite meals ⚡</div>
+        {favoriteMeals.length === 0 ? (
+          <div style={{ fontSize: '0.78rem', color: '#4b5563', fontStyle: 'italic' }}>
+            Save a meal to see it here
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: '0.6rem', overflowX: 'auto', paddingBottom: '0.35rem' }}>
+            {favoriteMeals.map(fm => (
+              <div key={fm.id} style={{
+                flexShrink: 0,
+                padding: '0.55rem 0.75rem',
+                borderRadius: '12px',
+                border: '1px solid rgba(148,163,184,0.2)',
+                background: 'rgba(15,23,42,0.85)',
+                minWidth: '120px',
+                maxWidth: '160px',
+                position: 'relative',
+              }}>
+                <button
+                  type="button"
+                  onClick={() => handleDeleteFavoriteMeal(fm.id)}
+                  style={{
+                    position: 'absolute',
+                    top: '0.3rem',
+                    right: '0.3rem',
+                    background: 'none',
+                    border: 'none',
+                    color: '#6b7280',
+                    cursor: 'pointer',
+                    fontSize: '0.7rem',
+                    lineHeight: 1,
+                    padding: '0.1rem 0.2rem',
+                  }}
+                >×</button>
+                <div style={{ fontSize: '0.78rem', fontWeight: 600, color: '#e5e7eb', marginBottom: '0.15rem', paddingRight: '0.9rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {fm.name}
+                </div>
+                <div style={{ fontSize: '0.68rem', color: '#9ca3af', marginBottom: '0.4rem' }}>
+                  {fm.itemCount ?? fm.items?.length ?? '?'} items
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleQuickAddMeal(fm.id)}
+                  style={{
+                    width: '100%',
+                    padding: '0.25rem',
+                    borderRadius: '7px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, rgba(176,112,254,0.7), rgba(254,105,165,0.5))',
+                    color: 'white',
+                    fontWeight: 600,
+                    fontSize: '0.72rem',
+                    cursor: 'pointer',
+                  }}
+                >Add all</button>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {foodItems.length > 0 && (
+          <button
+            type="button"
+            onClick={() => { setFavoriteMealName(''); setShowSaveMealModal(true); }}
+            style={{
+              marginTop: '0.7rem',
+              background: 'none',
+              border: '1px solid rgba(148,163,184,0.25)',
+              borderRadius: '999px',
+              color: '#9ca3af',
+              fontSize: '0.78rem',
+              padding: '0.35rem 0.85rem',
+              cursor: 'pointer',
+            }}
+          >Save meal as favourite ★</button>
+        )}
+      </div>
+
+      {/*save meal modal*/}
+      {showSaveMealModal && (
+        <div style={{
+          position: 'fixed',
+          inset: 0,
+          background: 'rgba(0,0,0,0.7)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 100,
+          padding: '1rem',
+        }}>
+          <div style={{
+            width: '100%',
+            maxWidth: '340px',
+            background: '#0f172a',
+            border: '1px solid rgba(148,163,184,0.2)',
+            borderRadius: '20px',
+            padding: '1.5rem',
+          }}>
+            <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#e5e7eb', marginBottom: '1rem' }}>
+              Save meal as favourite
+            </div>
+            <div style={fieldLabel}>Meal name</div>
+            <input
+              autoFocus
+              value={favoriteMealName}
+              onChange={e => setFavoriteMealName(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSaveMealAsFavorite()}
+              placeholder="e.g. My go-to breakfast"
+              style={{ ...inputStyle, marginBottom: '1rem' }}
+            />
+            <div style={{ display: 'flex', gap: '0.5rem' }}>
+              <button
+                type="button"
+                onClick={handleSaveMealAsFavorite}
+                disabled={!favoriteMealName.trim()}
+                style={confirmBtn}
+              >Save</button>
+              <button
+                type="button"
+                onClick={() => setShowSaveMealModal(false)}
+                style={ghostBtn}
+              >Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/*food items list*/}
       <div style={{width:'100%', maxWidth:'520px', marginBottom:'1rem' }}>
