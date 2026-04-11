@@ -1,4 +1,4 @@
-# Macro Meal Planner — Frontend
+# Macro Meal Planner Frontend
 
 React frontend for a macro-focused weekly meal planner. Plan meals around personal goals and track calories and protein per meal, day, and week.
 
