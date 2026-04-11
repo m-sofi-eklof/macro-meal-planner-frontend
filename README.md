@@ -23,11 +23,11 @@ React frontend for a macro-focused weekly meal planner. Plan meals around person
 - Mobile responsive
 
 ## Pages
-- `/auth` — Login and registration
-- `/planner` — Weekly meal planner
-- `/MealCreator` — Add and manage food items for a meal
-- `/user` — Goals, body stats and macro calculator
-- `/list` — Weekly shopping list
+- `/auth` - Login and registration
+- `/planner` - Weekly meal planner
+- `/MealCreator` - Add and manage food items for a meal
+- `/user` - Goals, body stats and macro calculator
+- `/list` - Weekly shopping list
 
 ## Quick start
 
