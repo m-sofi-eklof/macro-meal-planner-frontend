@@ -20,7 +20,6 @@ function Planner() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  //refetch meals when return from mealcreator
   useEffect(() => {
     if (location.state?.refresh) {
       setRefreshKey(k => k + 1);
@@ -85,7 +84,7 @@ function Planner() {
   const handleOpenUserPage = () => navigate('/user');
 
   const weekLabel = week
-    ? `Week ${week.weekNumber} / ${week.startDate} - ${week.endDate}`
+    ? `${week.startDate} — ${week.endDate}`
     : 'Loading...';
 
   const addDays = (isoDate, days) => {
@@ -106,11 +105,13 @@ function Planner() {
       flexDirection: 'column',
       alignItems: 'center',
       padding: '2rem 1rem',
-      background: 'radial-gradient(circle at top, #060918e5 0%, #030510c8 50%, #00000091 100%)',
+      background: 'radial-gradient(ellipse at top, #111827 0%, #020617 60%)',
       color: 'white',
       overflowY: 'auto',
+      boxSizing: 'border-box',
     }}>
-      {/*Week header*/}
+
+      {/* Header */}
       <div style={{
         width: '100%',
         maxWidth: '900px',
@@ -121,18 +122,19 @@ function Planner() {
         marginBottom: '1.5rem',
         gap: isMobile ? '1rem' : '0',
       }}>
-        <div style={{ display: 'flex', gap: '0.7rem', flexDirection: 'row' }}>
-          <button style={userButtonStyle} onClick={handleOpenUserPage}>ME</button>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
-            <span style={{ fontSize: '0.9rem', letterSpacing: '0.12em', textTransform: 'uppercase', color: '#9ca3af' }}>
-              Weekly plan
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <button style={userBtnStyle} onClick={handleOpenUserPage}>ME</button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.15rem' }}>
+            <span style={{ fontSize: '0.68rem', letterSpacing: '0.16em', textTransform: 'uppercase', color: '#6b7280' }}>
+              Week {week?.weekNumber ?? '—'}
             </span>
             <span style={{
-              fontSize: isMobile ? 'clamp(0.8rem, 3.5vw, 1rem)' : '1.1rem',
-              fontWeight: 600,
+              fontSize: isMobile ? 'clamp(0.82rem, 3.5vw, 1rem)' : '0.95rem',
+              fontWeight: 500,
+              color: '#e5e7eb',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
-              textOverflow: 'ellipsis'
+              textOverflow: 'ellipsis',
             }}>
               {weekLabel}
             </span>
@@ -141,45 +143,47 @@ function Planner() {
 
         <div style={{
           display: 'flex',
-          gap: '0.5rem',
+          gap: '0.4rem',
           width: isMobile ? '100%' : 'auto',
-          justifyContent: isMobile ? 'space-between' : 'flex-start'
+          justifyContent: isMobile ? 'space-between' : 'flex-end',
         }}>
-          <button style={{ ...navButtonStyle, flex: isMobile ? 1 : 'none' }} onClick={handlePrevWeek}>‹ Prev</button>
-          <button style={{ ...navButtonStyle, flex: isMobile ? 1 : 'none' }} onClick={fetchCurrentWeek}>This week</button>
-          <button style={{ ...navButtonStyle, flex: isMobile ? 1 : 'none' }} onClick={handleNextWeek}>Next ›</button>
+          <button style={{ ...navBtnStyle, flex: isMobile ? 1 : 'none' }} onClick={handlePrevWeek}>‹ Prev</button>
+          <button style={{ ...navBtnStyle, flex: isMobile ? 1 : 'none' }} onClick={fetchCurrentWeek}>Today</button>
+          <button style={{ ...navBtnStyle, flex: isMobile ? 1 : 'none' }} onClick={handleNextWeek}>Next ›</button>
         </div>
       </div>
 
-      {/*Shopping list button */}
+      {/* Shopping list button */}
       <div style={{ width: '100%', maxWidth: '900px', marginBottom: '1.5rem' }}>
-        <button style={{
-          width: '100%',
-          padding: '0.85rem 1.25rem',
-          borderRadius: '999px',
-          background: 'linear-gradient(135deg, rgba(254, 43, 181, 0.82), rgba(38, 160, 194, 0.77))',
-          color: '#fefce8',
-          fontWeight: 600,
-          fontSize: '0.9rem',
-          letterSpacing: '0.12em',
-          textTransform: 'uppercase',
-          cursor: 'pointer',
-          border: 'none',
-        }} onClick={() => navigate('/list')}>
-          Generate shopping list
+        <button
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            borderRadius: '10px',
+            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid rgba(255,255,255,0.1)',
+            color: '#e5e7eb',
+            fontWeight: 500,
+            fontSize: '0.85rem',
+            letterSpacing: '0.06em',
+            cursor: 'pointer',
+          }}
+          onClick={() => navigate('/list')}
+        >
+          Shopping list →
         </button>
       </div>
 
       {/* Day cards */}
       {loading ? (
-        <p style={{ color: '#9ca3af' }}>Loading week...</p>
+        <p style={{ color: '#4b5563', fontSize: '0.85rem' }}>Loading...</p>
       ) : (
         <div style={{
           width: '100%',
           maxWidth: '900px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '1.25rem',
+          gap: '1rem',
           paddingBottom: '2rem',
         }}>
           {WEEK_DAYS.map((dayName, index) => {
@@ -202,34 +206,32 @@ function Planner() {
   );
 }
 
-const navButtonStyle = {
-  padding: '0.45rem 0.85rem',
-  borderRadius: '999px',
-  border: '1px solid #4b5563',
-  background: 'rgba(15,23,42,0.9)',
-  color: '#e5e7eb',
-  fontSize: '0.8rem',
-  letterSpacing: '0.08em',
-  textTransform: 'uppercase',
+const navBtnStyle = {
+  padding: '0.45rem 0.9rem',
+  borderRadius: '8px',
+  border: '1px solid rgba(255,255,255,0.1)',
+  background: 'rgba(255,255,255,0.05)',
+  color: '#9ca3af',
+  fontSize: '0.78rem',
+  letterSpacing: '0.05em',
   cursor: 'pointer',
 };
 
-const userButtonStyle = {
-  width: '45px',
-  height: '45px',
+const userBtnStyle = {
+  width: '40px',
+  height: '40px',
+  flexShrink: 0,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: '0',
+  padding: 0,
   borderRadius: '10px',
-  border: '1px solid #8b8d7169',
-  background: 'rgba(2, 92, 137, 0.59)',
-  color: '#e5e7eb',
-  fontSize: '0.8rem',
-  letterSpacing: '0.08em',
-  textTransform: 'uppercase',
+  border: '1px solid rgba(255,255,255,0.1)',
+  background: 'rgba(255,255,255,0.06)',
+  color: '#9ca3af',
+  fontSize: '0.72rem',
+  letterSpacing: '0.1em',
   cursor: 'pointer',
-  flexShrink: 0,
 };
 
 export default Planner;
