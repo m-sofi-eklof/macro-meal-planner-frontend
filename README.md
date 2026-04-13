@@ -4,20 +4,13 @@ React frontend for a macro-focused weekly meal planner. Plan meals around person
 
 ## Screenshots
 
-### Login
-![Login screen](./screenshots/login.png)
+| Login | Goals | Add meal items |
+|---|---|---|
+| <img src="./screenshots/login.png" alt="Login screen" width="220" /> | <img src="./screenshots/goals.png" alt="Goals and macro calculator screen" width="220" /> | <img src="./screenshots/adding.png" alt="Meal creation screen" width="220" /> |
 
-### Goals
-![Goals and macro calculator screen](./screenshots/goals.png)
-
-### Add meal items
-![Meal creation screen](./screenshots/adding.png)
-
-### Weekly planner
-![Weekly meal planner screen](./screenshots/planner.png)
-
-### Shopping list
-![Weekly shopping list screen](./screenshots/shopping.png)
+| Weekly planner | Shopping list |
+|---|---|
+| <img src="./screenshots/planner.png" alt="Weekly meal planner screen" width="220" /> | <img src="./screenshots/shopping.png" alt="Weekly shopping list screen" width="220" /> |
 
 ## Built with
 - React 19
