@@ -2,6 +2,23 @@
 
 React frontend for a macro-focused weekly meal planner. Plan meals around personal goals and track calories and protein per meal, day, and week.
 
+## Screenshots
+
+### Login
+![Login screen](./screenshots/login.png)
+
+### Goals
+![Goals and macro calculator screen](./screenshots/goals.png)
+
+### Add meal items
+![Meal creation screen](./screenshots/adding.png)
+
+### Weekly planner
+![Weekly meal planner screen](./screenshots/planner.png)
+
+### Shopping list
+![Weekly shopping list screen](./screenshots/shopping.png)
+
 ## Built with
 - React 19
 - Vite
