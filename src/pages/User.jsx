@@ -34,6 +34,9 @@ const GOALS = [
 function UserPage() {
   const navigate = useNavigate();
 
+  // which card is shown: 'calculator' | 'manual'
+  const [mode, setMode] = useState('calculator');
+
   // existing goals state
   const [calories, setCalories] = useState('');
   const [protein, setProtein]   = useState('');
@@ -53,7 +56,6 @@ function UserPage() {
   });
   const [calcResult, setCalcResult]   = useState(null);
   const [calculating, setCalculating] = useState(false);
-  const [calcSuccess, setCalcSuccess] = useState(false);
 
   // fetch goals
   useEffect(() => {
@@ -91,17 +93,14 @@ function UserPage() {
   const handleSave = async () => {
     setSaving(true);
     setError(null);
-    setSuccess(false);
     try {
       await api.put('/api/users/goals', {
         calories: Number(calories),
         protein:  Number(protein),
       });
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 2500);
+      navigate('/planner');
     } catch (err) {
       setError('Failed to save goals. Please try again.');
-    } finally {
       setSaving(false);
     }
   };
@@ -139,10 +138,7 @@ function UserPage() {
         calories: calcResult.recommendedCalories,
         protein:  calcResult.recommendedProtein,
       });
-      setCalories(String(calcResult.recommendedCalories));
-      setProtein(String(calcResult.recommendedProtein));
-      setCalcSuccess(true);
-      setTimeout(() => setCalcSuccess(false), 2500);
+      navigate('/planner');
     } catch (e) {
       console.error('Failed to apply goals', e);
     }
@@ -173,9 +169,18 @@ function UserPage() {
         </div>
 
         {/* ── CALCULATOR CARD ────────────────────────────────── */}
+        {mode === 'calculator' && (
         <div style={{ ...cardStyle, marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9ca3af', marginBottom: '1.25rem' }}>
-            Macro Calculator
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.25rem' }}>
+            <div style={{ fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9ca3af' }}>
+              Macro Calculator
+            </div>
+            <button
+              onClick={() => setMode('manual')}
+              style={toggleLinkStyle}
+            >
+              Know your goals? Set them directly →
+            </button>
           </div>
 
           {/* Goal picker */}
@@ -296,57 +301,61 @@ function UserPage() {
               <div style={{ fontSize: '0.78rem', color: '#6b7280', marginBottom: '1rem' }}>
                 TDEE: {calcResult.tdee} kcal &nbsp;·&nbsp; BMR: {calcResult.bmr} kcal
               </div>
-              <button
-                onClick={handleApplyGoals}
-                style={{ ...saveButtonStyle }}
-              >
+              <button onClick={handleApplyGoals} style={{ ...saveButtonStyle }}>
                 Apply & Save
               </button>
-              {calcSuccess && (
-                <p style={{ color: '#34d399', fontSize: '0.85rem', marginTop: '0.75rem', textAlign: 'center' }}>Goals updated!</p>
-              )}
             </div>
           )}
         </div>
+        )}
 
         {/* ── MANUAL GOALS CARD ──────────────────────────────── */}
-        {loading ? (
-          <p style={{ color: '#9ca3af' }}>Loading...</p>
-        ) : (
-          <div style={cardStyle}>
-            <p style={{ fontSize: '0.85rem', color: '#9ca3af', marginBottom: '1.75rem', lineHeight: 1.6 }}>
-              Set your daily targets manually, or apply the calculated values above.
-            </p>
+        {mode === 'manual' && (
+          loading ? (
+            <p style={{ color: '#9ca3af' }}>Loading...</p>
+          ) : (
+            <div style={cardStyle}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+                <div style={{ fontSize: '0.75rem', letterSpacing: '0.1em', textTransform: 'uppercase', color: '#9ca3af' }}>
+                  Set Goals Manually
+                </div>
+                <button
+                  onClick={() => setMode('calculator')}
+                  style={toggleLinkStyle}
+                >
+                  ← Use macro calculator
+                </button>
+              </div>
 
-            <label style={labelStyle}>Daily Calories (kcal)</label>
-            <input
-              type="number"
-              value={calories}
-              onChange={e => setCalories(e.target.value)}
-              placeholder="e.g. 2000"
-              style={inputStyle}
-            />
+              <label style={labelStyle}>Daily Calories (kcal)</label>
+              <input
+                type="number"
+                value={calories}
+                onChange={e => setCalories(e.target.value)}
+                placeholder="e.g. 2000"
+                style={inputStyle}
+              />
 
-            <label style={{ ...labelStyle, marginTop: '1.25rem' }}>Daily Protein (g)</label>
-            <input
-              type="number"
-              value={protein}
-              onChange={e => setProtein(e.target.value)}
-              placeholder="e.g. 150"
-              style={inputStyle}
-            />
+              <label style={{ ...labelStyle, marginTop: '1.25rem' }}>Daily Protein (g)</label>
+              <input
+                type="number"
+                value={protein}
+                onChange={e => setProtein(e.target.value)}
+                placeholder="e.g. 150"
+                style={inputStyle}
+              />
 
-            {error   && <p style={{ color: '#f87171', fontSize: '0.85rem', marginTop: '1rem' }}>{error}</p>}
-            {success && <p style={{ color: '#34d399', fontSize: '0.85rem', marginTop: '1rem' }}>Goals saved!</p>}
+              {error && <p style={{ color: '#f87171', fontSize: '0.85rem', marginTop: '1rem' }}>{error}</p>}
 
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              style={{ ...saveButtonStyle, opacity: saving ? 0.6 : 1, marginTop: '2rem' }}
-            >
-              {saving ? 'Saving...' : 'Save Goals'}
-            </button>
-          </div>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                style={{ ...saveButtonStyle, opacity: saving ? 0.6 : 1, marginTop: '2rem' }}
+              >
+                {saving ? 'Saving...' : 'Save Goals'}
+              </button>
+            </div>
+          )
         )}
 
       </div>
@@ -410,6 +419,18 @@ const saveButtonStyle = {
   letterSpacing: '0.12em',
   textTransform: 'uppercase',
   cursor: 'pointer',
+};
+
+const toggleLinkStyle = {
+  background: 'none',
+  border: 'none',
+  color: '#6b7280',
+  fontSize: '0.72rem',
+  cursor: 'pointer',
+  padding: 0,
+  textAlign: 'right',
+  lineHeight: 1.4,
+  maxWidth: '160px',
 };
 
 export default UserPage;

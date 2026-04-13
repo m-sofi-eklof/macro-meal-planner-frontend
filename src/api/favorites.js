@@ -6,11 +6,11 @@ export const getFavorites = () =>
 export const saveFavorite = (item) =>
   api.post('/api/favorites', {
     name: item.name,
-    source: item.source,
+    source: item.source ?? 'USDA',
     fdcId: item.fdcId,
     calories: item.calories,
     protein: item.protein,
-    servings: item.servings,
+    servings: item.servings ?? 1,
     servingDescription: item.servingDescription,
   }).then(r => r.data);
 
