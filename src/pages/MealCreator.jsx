@@ -29,7 +29,7 @@ function MealCreator() {
   const [searchResults, setSearchResults] = useState([]);
   const [searching, setSearching] = useState(false);
   const [selectedResult, setSelectedResult] = useState(null);
-  const [selectedQty, setSelectedQty] = useState('1');
+  const [selectedGrams, setSelectedGrams] = useState('100');
 
   const [manualName, setManualName] = useState('');
   const [manualCalories, setManualCalories] = useState('');
@@ -112,15 +112,15 @@ function MealCreator() {
     try {
       const id = await ensureMeal();
       if (!id) return;
-      const qty = parseFloat(selectedQty) || 1;
+      const grams = parseFloat(selectedGrams) || 100;
       const res = await api.post(`/api/meals/${id}/food-items`, {
         source: 'USDA',
         fdcId: selectedResult.fdcId,
-        servings: qty,
+        grams,
       });
       setFoodItems(prev => [...prev, res.data]);
       setSelectedResult(null);
-      setSelectedQty('1');
+      setSelectedGrams('100');
       setSearchResults([]);
       setQuery('');
       setMode('idle');
@@ -143,7 +143,7 @@ function MealCreator() {
         name: manualName,
         calories: parseFloat(manualCalories),
         protein: parseFloat(manualProtein) || 0,
-        servings: parseFloat(manualQty) || 100,
+        grams: parseFloat(manualQty) || 100,
       });
       setFoodItems(prev => [...prev, res.data]);
       setManualName('');
@@ -383,7 +383,7 @@ function MealCreator() {
                 <div>
                   <div style={{ fontSize: '0.85rem', fontWeight: 500, color: '#e5e7eb' }}>{item.name}</div>
                   <div style={{ fontSize: '0.72rem', color: '#6b7280', marginTop: '0.1rem' }}>
-                    {item.servings} servings · {item.calories} kcal · {item.protein}g protein
+                    {item.grams ?? 100}g · {item.calories} kcal · {item.protein}g protein
                   </div>
                 </div>
                 <button
@@ -476,7 +476,7 @@ function MealCreator() {
                   >
                     <div>{r.name}</div>
                     <div style={{ fontSize: '0.7rem', color: '#6b7280', marginTop: '0.1rem' }}>
-                      {r.calories} kcal · {r.protein ?? 0}g protein · per {r.servingDescription || '1 serving'}
+                      {r.calories} kcal · {r.protein ?? 0}g protein · per 100g
                     </div>
                   </button>
                   <button
@@ -506,12 +506,13 @@ function MealCreator() {
                 {selectedResult.name}
               </div>
               <div style={{ fontSize: '0.72rem', color: '#6b7280', marginBottom: '0.65rem' }}>
-                1 serving = {selectedResult.servingDescription || '100g'}
+                {Math.round((parseFloat(selectedGrams) || 0) / 100 * selectedResult.calories)} kcal
+                · {((parseFloat(selectedGrams) || 0) / 100 * (selectedResult.protein ?? 0)).toFixed(1)}g protein
               </div>
               <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1 }}>
-                  <div style={fieldLabel}>Servings</div>
-                  <input type="number" value={selectedQty} onChange={e => setSelectedQty(e.target.value)} style={inputStyle} />
+                  <div style={fieldLabel}>Grams</div>
+                  <input type="number" value={selectedGrams} onChange={e => setSelectedGrams(e.target.value)} style={inputStyle} />
                 </div>
                 <button type="button" onClick={handleAddFromSearch} disabled={saving} style={primaryBtn}>
                   {saving ? '…' : 'Add'}

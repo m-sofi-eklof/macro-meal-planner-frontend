@@ -10,8 +10,6 @@ export const saveFavorite = (item) =>
     fdcId: item.fdcId,
     calories: item.calories,
     protein: item.protein,
-    servings: item.servings ?? 1,
-    servingDescription: item.servingDescription,
   }).then(r => r.data);
 
 export const deleteFavorite = (id) =>

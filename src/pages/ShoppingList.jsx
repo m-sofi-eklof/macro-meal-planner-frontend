@@ -12,7 +12,7 @@ function aggregateFoodItems(items) {
       const existing = map.get(key);
       map.set(key, {
         ...existing,
-        servings: existing.servings + item.servings,
+        grams: (existing.grams ?? 100) + (item.grams ?? 100),
         calories: existing.calories + item.calories,
         protein: parseFloat((existing.protein + item.protein).toFixed(1)),
       });
@@ -125,7 +125,7 @@ export default function ShoppingList() {
                     {item.name}
                   </div>
                   <div style={{ fontSize: '0.7rem', color: '#4b5563', marginTop: '0.1rem' }}>
-                    {item.servings} {item.servingDescription || 'serving'}
+                    {item.grams ?? 100}g
                   </div>
                 </div>
                 <div style={{ textAlign: 'right', fontSize: '0.72rem', color: '#6b7280' }}>
