@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
 
 const GRADIENTS = [
-  'linear-gradient(135deg, rgba(56, 146, 248, 0.45), rgba(16, 185, 129, 0.18))',
-  'linear-gradient(135deg, rgba(251, 226, 36, 0.38), rgba(248, 113, 113, 0.22))',
+  'linear-gradient(135deg, rgba(56, 146, 248, 0.34), rgba(16, 185, 129, 0.15))',
+  'linear-gradient(135deg, rgba(251, 226, 36, 0.38), rgba(248, 113, 113, 0.26))',
   'linear-gradient(135deg, rgba(176, 112, 254, 0.45), rgba(254, 105, 165, 0.2))',
   'linear-gradient(135deg, rgba(84, 160, 252, 0.42), rgba(163, 129, 248, 0.22))',
   'linear-gradient(135deg, rgba(48, 228, 204, 0.38), rgba(59, 131, 246, 0.22))',
@@ -20,14 +20,14 @@ function DayCard({ dayName, gradientIndex, date, dayData, refreshKey }) {
     if (!dayData?.id) return;
     api.get(`/api/days/${dayData.id}/meals`)
       .then(res => setMeals(res.data || []))
-      .catch(() => {});
+      .catch(err => console.error('Failed to fetch meals for day', dayData.id, err));
   }, [dayData?.id, refreshKey]);
 
   useEffect(() => {
     if (!date) return;
     api.get(`/api/daily-summary/${date}`)
       .then(res => setSummary(res.data))
-      .catch(() => {});
+      .catch(err => console.error('[DayCard] summary fetch failed for', date, err));
   }, [date, refreshKey]);
 
   const getMeal = (type) =>
@@ -171,4 +171,4 @@ function MealSlot({ mealType, meal, dayId }) {
   );
 }
 
-export default DayCard;
+export default DayCard
