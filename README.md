@@ -9,6 +9,11 @@ React frontend for a macro-focused weekly meal planner. Plan meals around person
 - Axios
 - JWT authentication
 
+## Development Notes
+- Frontend developed in parallel with backend architecture
+- Certain features and finalized styling implemented using AI-assisted development
+- Focus on maintaining consistency with backend API and existing UI patterns
+
 ## Features
 - Weekly meal planner with day-by-day breakdown
 - Meal slots per day (breakfast, lunch, dinner, snacks)
